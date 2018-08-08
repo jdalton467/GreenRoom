@@ -1,17 +1,8 @@
 import React, { Component } from 'react';
+import {ChatManager, TokenProvider} from '@pusher/chatkit';
 import logo from './logo.svg';
 import './App.css';
 
-
-const DUMMY_DATA = [{
-  senderId: "perborgen",
-  text: "who'll win?"
-},
-{
-  senderId: "jamedoe",
-  text: "who'll win?"
-}
-]
 
 const instanceLocator = "v1:us1:d031a961-3f61-46fb-8f62-d226a0d1460c";
 const testToken = "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/d031a961-3f61-46fb-8f62-d226a0d1460c/token";
@@ -23,30 +14,41 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
-      messages: DUMMY_DATA
+      messages: []
     }
+    this.sendMessage = this.sendMessage.bind(this)
   }
 
   componentDidMount(){
-    const chatManager = new Chatkit.ChatManager({
-      instanceLocator: instanceLocator,
-      userId: username,
-      tokenProvider: new Chatkit.TokenProvider({
-        url: testToken
-      })
-    })
-
-    chatManager.connect().then(currentUser => {
-      currentUser.subscribeToRoom({
-        roomId: roomId,
-        hooks: {
-          onNewMessage: message => {
-            this.setState({
-              messages: [...this.state.messages, messages]
+   const chatManager = new ChatManager({
+            instanceLocator: instanceLocator,
+            userId: username,
+            tokenProvider: new TokenProvider({
+                url: testToken
             })
-          }
-        }
+        })
+        
+        chatManager.connect()
+        .then(currentUser => {
+            this.currentUser = currentUser
+            this.currentUser.subscribeToRoom({
+            roomId: roomId,
+            hooks: {
+                onNewMessage: message => {
+
+                    this.setState({
+                        messages: [...this.state.messages, message]
+                    })
+                }
+            }
+        })
       })
+  }
+
+  sendMessage(text){
+    this.currentUser.sendMessage({
+      text, 
+      roomId: roomId
     })
   }
 
@@ -54,9 +56,9 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-       
+        <Title />
         <MessageList messages={this.state.messages} />
-       
+        <SendMessageFrom sendMessage={this.sendMessage} />
       </div>
     );
   }
@@ -82,6 +84,48 @@ class MessageList extends React.Component{
     )
   }
 }
+
+class SendMessageFrom extends React.Component{
+  
+  constructor(){
+    super()
+    this.state = {
+      message: ''
+    }
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
+  
+
+  handleChange(e){
+    this.setState({
+      message: e.target.value
+    })
+  }
+
+  handleSubmit(e){
+    e.preventDefault()
+    this.props.sendMessage(this.state.message)
+    this.setState({
+      message: ''
+    })
+  }
+
+
+
+  render(){
+    return(
+      <form onSubmit={this.handleSubmit} className="send-message-form">
+        <input onChange={this.handleChange} value={this.state.message} placeholder="Type your message and hit Enter" type="text" />
+      </form>
+    )
+  }
+}
+
+function Title(){
+  return <p class="title">My awesome chat app </p>
+}
+
 
 
 export default App;
