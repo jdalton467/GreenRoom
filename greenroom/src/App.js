@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {ChatManager, TokenProvider} from '@pusher/chatkit';
+import axios from 'axios';
 import logo from './logo.svg';
 import './App.css';
 
@@ -8,18 +9,30 @@ const instanceLocator = "v1:us1:d031a961-3f61-46fb-8f62-d226a0d1460c";
 const testToken = "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/d031a961-3f61-46fb-8f62-d226a0d1460c/token";
 const username = "jd123";
 const roomId = 13408415;
+var JWT;
 
 
 class App extends Component {
   constructor(){
     super();
     this.state = {
-      messages: []
+      messages: [],
+      token: ''
     }
     this.sendMessage = this.sendMessage.bind(this)
   }
 
+  componentWillMount(){
+    axios.post('/auth', {user_id: username})
+   .then(response =>  
+    this.setState({token: response.data.access_token}),
+    ).then(console.log(this.state.token)).catch(err => console.log(err))
+
+  }
+
   componentDidMount(){
+
+   
    const chatManager = new ChatManager({
             instanceLocator: instanceLocator,
             userId: username,
@@ -43,8 +56,10 @@ class App extends Component {
             }
         })
       })
+
   }
 
+  
   sendMessage(text){
     this.currentUser.sendMessage({
       text, 
@@ -59,6 +74,7 @@ class App extends Component {
         <Title />
         <MessageList messages={this.state.messages} />
         <SendMessageFrom sendMessage={this.sendMessage} />
+        {this.state.response}
       </div>
     );
   }
