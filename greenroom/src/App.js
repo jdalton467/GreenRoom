@@ -22,22 +22,12 @@ class App extends Component {
     this.sendMessage = this.sendMessage.bind(this)
   }
 
-  componentWillMount(){
-    axios.post('/auth', {user_id: username})
-   .then(response =>  
-    this.setState({token: response.data.access_token}),
-    ).then(console.log(this.state.token)).catch(err => console.log(err))
-
-  }
-
   componentDidMount(){
-
-   
    const chatManager = new ChatManager({
             instanceLocator: instanceLocator,
             userId: username,
             tokenProvider: new TokenProvider({
-                url: testToken
+                url: 'localhost:5000/auth'
             })
         })
         

@@ -3,6 +3,7 @@
 const express = require('express');
 const Chatkit = require('@pusher/chatkit-server');
 const bodyParser = require('body-parser');
+const https = require('https');
 const app =  express();
 const port = process.env.PORT || 5000;
 const instanceLocator = "v1:us1:d031a961-3f61-46fb-8f62-d226a0d1460c";
@@ -19,7 +20,7 @@ app.get('/api/hello', (req, res) => {
 
 const chatkit = new Chatkit.default({
   instanceLocator: instanceLocator,
-  key: ''
+  key: 
 });
 
 app.post('/auth', (req, res) => {
