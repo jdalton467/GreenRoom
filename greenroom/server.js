@@ -20,17 +20,17 @@ app.get('/api/hello', (req, res) => {
 
 const chatkit = new Chatkit.default({
   instanceLocator: instanceLocator,
-  key: '7867752a-f593-4475-a48d-315879146dbd:d9iGflbYA7TXHgs4BAcTgWOcX/6j6PvqYO686QgbUoA='
+  key: 
 });
 
 app.post('/auth', (req, res) => {
   console.log(req.query.user_id)
   const authData = chatkit.authenticate({
-    userId: ''
+    userId: req.query.user_id
   });
-  console.log(authData);
+  console.log(authData.body);
   res.status(authData.status)
-     .send(authData);
+     .send(authData.body);
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
