@@ -27,7 +27,7 @@ class App extends Component {
             instanceLocator: instanceLocator,
             userId: username,
             tokenProvider: new TokenProvider({
-                url: 'localhost:5000/auth'
+                url: '/auth'
             })
         })
         
