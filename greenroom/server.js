@@ -20,15 +20,15 @@ app.get('/api/hello', (req, res) => {
 
 const chatkit = new Chatkit.default({
   instanceLocator: instanceLocator,
-  key: 
-});
+  key: '7867752a-f593-4475-a48d-315879146dbd:d9iGflbYA7TXHgs4BAcTgWOcX/6j6PvqYO686QgbUoA='
+})
 
 app.post('/auth', (req, res) => {
   console.log(req.query.user_id)
   const authData = chatkit.authenticate({
     userId: req.query.user_id
   });
-  console.log(authData.body);
+  console.log(authData);
   res.status(authData.status)
      .send(authData.body);
 })
