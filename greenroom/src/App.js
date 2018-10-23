@@ -1,136 +1,76 @@
 import React, { Component } from 'react';
-import {ChatManager, TokenProvider} from '@pusher/chatkit';
+import Chatkit from '@pusher/chatkit';
+import MessageList from './components/MessageList';
+import SendMessageForm from './components/SendMessageForm';
+// import RoomList from './components/RoomList';
+// import NewRoomForm from './components/NewRoomForm';
+import {tokenUrl, instanceLocator} from './config';
 import axios from 'axios';
 import logo from './logo.svg';
 import './App.css';
 
 
-const instanceLocator = "v1:us1:d031a961-3f61-46fb-8f62-d226a0d1460c";
-const testToken = "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/d031a961-3f61-46fb-8f62-d226a0d1460c/token";
-const username = "jd123";
-const roomId = 13408415;
-var JWT;
 
+// const instanceLocator = "v1:us1:d031a961-3f61-46fb-8f62-d226a0d1460c";
+// const testToken = "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/d031a961-3f61-46fb-8f62-d226a0d1460c/token";
+// const username = "jd123";
+// const roomId = 13408415;
+// var JWT;
 
-class App extends Component {
+class App extends React.Component{
+
   constructor(){
     super();
     this.state = {
-      messages: [],
-      token: ''
+      messages: []
     }
     this.sendMessage = this.sendMessage.bind(this)
   }
-
+  
   componentDidMount(){
-   const chatManager = new ChatManager({
-            instanceLocator: instanceLocator,
-            userId: username,
-            tokenProvider: new TokenProvider({
-                url: '/auth'
-            })
+      const chatManager = new Chatkit.ChatManager({
+        instanceLocator: instanceLocator,
+        userId: 'rexkwondoe',
+        tokenProvider: new Chatkit.TokenProvider({
+          url: tokenUrl
         })
-        
-        chatManager.connect()
-        .then(currentUser => {
-            this.currentUser = currentUser
-            this.currentUser.subscribeToRoom({
-            roomId: roomId,
-            hooks: {
-                onNewMessage: message => {
 
-                    this.setState({
-                        messages: [...this.state.messages, message]
-                    })
-                }
-            }
-        })
       })
 
+      chatManager.connect().then(currentUser => {
+        this.currentUser = currentUser
+        currentUser.subscribeToRoom({
+          roomId: 19322700,
+          hooks: {
+            onNewMessage: message => {
+              console.log('message.text: ', message.text);
+              this.setState({
+                messages: [...this.state.messages, message]
+              })
+            }
+          }
+        })
+      })
   }
 
-  
   sendMessage(text){
     this.currentUser.sendMessage({
-      text, 
-      roomId: roomId
+      text: text,
+      roomId: 19322700
     })
   }
 
-
-  render() {
-    return (
-      <div className="App">
-        <Title />
-        <MessageList messages={this.state.messages} />
-        <SendMessageFrom sendMessage={this.sendMessage} />
-        {this.state.response}
-      </div>
+  render(){
+    return(
+        <div className="app">
+          <MessageList messages={this.state.messages}/>
+          <SendMessageForm sendMessage={this.sendMessage} />
+        </div>
     );
   }
 }
 
-class MessageList extends React.Component{
-  render(){
-    return(
-      <ul className="message-list">
-      {this.props.messages.map(message => {
-        return (
-          <li key={message.id}>
-            <div>
-              {message.senderId}
-            </div>
-            <div>
-              {message.text}
-            </div>
-          </li>
-        )
-      })}
-      </ul>
-    )
-  }
-}
 
-class SendMessageFrom extends React.Component{
-  
-  constructor(){
-    super()
-    this.state = {
-      message: ''
-    }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-  }
-  
-
-  handleChange(e){
-    this.setState({
-      message: e.target.value
-    })
-  }
-
-  handleSubmit(e){
-    e.preventDefault()
-    this.props.sendMessage(this.state.message)
-    this.setState({
-      message: ''
-    })
-  }
-
-
-
-  render(){
-    return(
-      <form onSubmit={this.handleSubmit} className="send-message-form">
-        <input onChange={this.handleChange} value={this.state.message} placeholder="Type your message and hit Enter" type="text" />
-      </form>
-    )
-  }
-}
-
-function Title(){
-  return <p class="title">My awesome chat app </p>
-}
 
 
 
