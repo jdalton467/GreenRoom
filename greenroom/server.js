@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const https = require('https');
 const app =  express();
 const port = process.env.PORT || 5000;
-const instanceLocator = "v1:us1:d031a961-3f61-46fb-8f62-d226a0d1460c";
+const instanceLocator = "v1:us1:7583eed7-34f4-4200-86bf-0a3ecb78f886";
 
 
 app.use(bodyParser.json()); // for parsing application/json
@@ -20,7 +20,7 @@ app.get('/api/hello', (req, res) => {
 
 const chatkit = new Chatkit.default({
   instanceLocator: instanceLocator,
-  key: '7867752a-f593-4475-a48d-315879146dbd:d9iGflbYA7TXHgs4BAcTgWOcX/6j6PvqYO686QgbUoA='
+  key: '579e2822-ef38-4142-aa68-3fae323921c6:SBb5oGXPHxBAylsnwjgNcaMj3gaX5rmKRul7XZhjURQ='
 })
 
 app.post('/auth', (req, res) => {
